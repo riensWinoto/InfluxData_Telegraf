@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf-mongodb-config
+  namespace: your-namespace
+data:
+  telegraf.conf: |-
+    [agent]
+      ## Default data collection interval for all inputs
+      interval = "10s"
+      round_interval = true
+      metric_batch_size = 1000
+      metric_buffer_limit = 10000
+      collection_jitter = "0s"
+      flush_interval = "10s"
+      flush_jitter = "0s"
+      precision = "0s"
+      hostname = "mongodb"
+      omit_hostname = false
+      debug = true
+
+    ###############################################################################
+    #                            OUTPUT PLUGINS                                   #
+    ###############################################################################
+
+    # Configuration for sending metrics to InfluxDB
+    [[outputs.influxdb]]
+      urls = ["http://yourInfluxDB:8086"]
+      database = "mongodb"
+      database_tag = "mongodb"
+      skip_database_creation = false
+      #retention_policy = "mongodb"
+
+    ###############################################################################
+    #                            INPUT PLUGINS                                    #
+    ###############################################################################
+
+    [[inputs.mongodb]]
+      servers = ["mongodb+srv://your_username:your_password@your_host/"]
+      gather_cluster_status = true
+      gather_perdb_stats = true
+      gather_col_stats = true
+      gather_top_stat = true
